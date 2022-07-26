@@ -1,4 +1,4 @@
-import React,{useEffect} from "react";
+import React,{useEffect, useLayoutEffect} from "react";
 import admin from "./assets/admin.jpeg" 
 import { useNavigate } from 'react-router-dom';
 import { Tooltip } from "react-bootstrap";
@@ -7,23 +7,54 @@ import Navbar from 'react-bootstrap/Navbar';
 import Logo from './assets/logo.png';
 import Avatar from "./Avatar";
 import PostComponent from "./PostComponent";
+import { getReportedPosts, deleteReportedPost, removePostReports } from "../utils/ApiCalls";
+import { useState } from "react";
+import axios from "axios";
 
 export default function Admin(){
 
     const navigate= useNavigate();
+    const [post, setPost] = useState([]);
 
     const logout=()=>{
         navigate("/");
         sessionStorage.clear();
     }
 
-    useEffect(()=>{
-        if(sessionStorage.getItem("type")==0) navigate("/home")
-        else if(sessionStorage.getItem("type")==1) navigate("/admin")
-        else navigate("/");
-    });
+    const refresh=()=>{
+        getReportedPosts().then((res)=> {
+            setPost([...res.data]);
+        });
+        axios.interceptors.request.use(
+            (config) => {
+                // if (this.isUserLoggedIn()) {
+                    config.headers.authorization = "Bearer " +sessionStorage.getItem("token");
+                // }
+                return config
+            }
+        )
+    }
 
-    return(<>
+    const handleDelete=(id)=>{
+        console.log("DEL", id);
+        deleteReportedPost(id);
+        refresh();
+    }
+
+    const handleRemoveReports=(id)=>{
+        removePostReports(id);
+        refresh();
+    }
+
+    useEffect(()=>{
+        if(sessionStorage.getItem("name")!=undefined) navigate("/admin")
+        else navigate("/");
+        refresh();
+    },[]);
+
+
+    return(
+        <div>
         {/* <h1>Hello Admin {sessionStorage.getItem("name")}</h1> */}
         {/* <img src={admin}></img> */}
         {/* <button className="logout" onClick={logout}>Logout</button> */}
@@ -49,7 +80,7 @@ export default function Admin(){
                             </OverlayTrigger>
                             <h3 className="nav-link d-md-none" to="/welcome/">Home</h3>
 
-                            <li><div className="nav-link" name="logout" onClick={logout}>Logout</div></li>
+                            <li><button className="nav-link btn btn-secondary" name="logout" onClick={logout}>Logout</button></li>
                         </ul>
 
                     </Navbar.Collapse>
@@ -62,7 +93,7 @@ export default function Admin(){
             </div>
 
             {
-            [1,2,3].map((i)=><PostComponent />)
+                post.map((item,index)=><PostComponent post={item} key={index} handleDelete={handleDelete} handleRemoveReports={handleRemoveReports}/>)
             }
 
             {/* <div className="post">
@@ -78,6 +109,6 @@ export default function Admin(){
 
 
             
-        </>
+        </div>
     );
 }

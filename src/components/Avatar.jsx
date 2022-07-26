@@ -1,14 +1,15 @@
 import React, { Component } from 'react'
 import Guest from "./assets/guest.jpeg"
-export default class Avatar extends Component {
+export default function Avatar(props){
 
-    handleError = (e) => {
+
+    const handleError = (e) => {
         e.target.src = Guest;
     }
 
-    render() {
-        return <div className="cmt-avatar">
-            <img src="" onError={this.handleError} alt="avatar"/>
-        </div>;
-    }
+    return(
+        <div className="cmt-avatar">
+            <img src={"http://localhost:8080" + '/avatar/' + props.username} onError={handleError} alt="avatar"/>
+        </div>
+    );
 }

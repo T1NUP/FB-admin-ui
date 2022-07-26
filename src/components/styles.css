@@ -22,7 +22,7 @@
 }
 
 .LoginComponent {
-    background: url("./assets/background.png") no-repeat center center;
+    background: url("./assets/background.jpg") no-repeat center center;
     background-size: cover;
     width: 100%;
     height: 100vh;
@@ -163,6 +163,11 @@ img{
     height: 20px;
 }
 
+.image-post{
+    width: 100%;
+    height: 100%;
+}
+
 .nav-link{
     font-size: medium;
     color: bisque;
@@ -238,5 +243,7 @@ sub{
     margin-right: 1em;
     overflow: hidden;
 }
-
-  
+.cmt-avatar img{
+    width: 100%;
+    height: 100%;
+}  

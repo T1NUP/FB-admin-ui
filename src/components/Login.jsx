@@ -1,4 +1,5 @@
 import React from "react";
+import axios from 'axios';
 import {Form, Button} from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.css';
 import './styles.css';
@@ -26,26 +27,35 @@ export default function Login(){
     const handleSubmit=()=>{
         console.log("SUB:::", username, password);
         let body={
-            userName: username,
+            username: username,
             password
         }
         validateLogin(body).then((res)=>{
             console.log("Da::", res);
            if(res.data.length!=0) {
-            navigate("/home");
-            sessionStorage.setItem("user",username);
-            sessionStorage.setItem("name",res.data.name);
-            sessionStorage.setItem("type",res.data.isAdmin);
+            navigate("/admin");
+            sessionStorage.setItem("token",res.data.token);
+            sessionStorage.setItem("name",username);
+            
+            axios.interceptors.request.use(
+                (config) => {
+                    // if (this.isUserLoggedIn()) {
+                        config.headers.authorization = "Bearer " +res.data.token
+                    // }
+                    return config
+                }
+                )
+            // sessionStorage.setItem("type",res.data.isAdmin);
            }
            else alert("Invalid Creds");
         });
         // navigate("/login");
     }
 
-    // useEffect(()=>{
-    //     if(sessionStorage.getItem("user")!=null) {}
-    //     else navigate("/");
-    // })
+    useEffect(()=>{
+        if(sessionStorage.getItem("name")!=null) {navigate("/admin")}
+        else navigate("/");
+    })
 
     return(
         <div class="MainApp">
@@ -73,7 +83,7 @@ export default function Login(){
                                 <br/>
                             <div class="footerBtn">
                                 <button type="button" class="btn btn-success" name="login" onClick={handleSubmit}>Login</button>
-                                <button type="button" name="register" class="btn btn-info" onClick={()=>(navigate("/register"))}>register</button>
+                                {/* <button type="button" name="register" class="btn btn-info" onClick={()=>(navigate("/register"))}>register</button> */}
                             </div>
                         </div>
                     </div>
